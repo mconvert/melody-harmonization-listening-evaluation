@@ -1,0 +1,6 @@
+harmoeval/harmoeval/rec/
+harmoeval/harmovenv/
+harmoeval/instance/
+*.mp3
+*.wav
+.DS_Store

@@ -1,0 +1,148 @@
+{% extends 'layout.html' %}
+
+{% block title %}In Progress{% endblock %}
+
+
+{% block content %}
+
+<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<script>
+    $(function() {
+        $( "#item-list" ).sortable();
+        $( "#item-list" ).disableSelection();
+    });
+</script>
+
+
+<div class="table">
+
+<form method="POST" action="eval" id="rankingForm">
+	
+	<div class="instruction">
+	<strong>概要 :</strong>この下に「Melody」と「Sample A〜F」の７つの音楽ファイルがあります．「Melody」では曲のメロディーのみ再生され，「Sample A〜F」ではそのメロディーと同時に和声が再生されます．
+	<br>
+	<br>
+	<strong>指示 :</strong>「Sample A〜F」 の和声を聞いて，メロディーに対して質の高いもの(聞きやすい・違和感が少ない)から低いもの順に並べ替え，下の[Next]ボタンを押してください．<br>(並べ替えはドラッグドロップでできます．)
+	<br><br>
+
+	<div class="list-entry">
+	<div class="harmo-label">Melody</div>
+	<div class="harmo-audio"><audio id="source_mld" controls controlsList="nodownload"><source src='{{ melody_file }}' type="audio/mpeg">MP3 not supported by browser.</audio></div>
+	</div>
+	</div>
+
+	<br>
+	<div class="page-count">{{ song_index + 1}}/{{ eval_len }}</div>
+	<br>
+
+
+
+	<div class="best-version">高い</div>
+
+	<ul id="item-list">
+
+	    <li><div class="list-entry">
+	    	<div hidden>{{ versions_shuffle[0] }}</div>
+	    	<div class="harmo-label">Sample A</div>
+	    	<div class="harmo-audio"><audio id="source_a" controls controlsList="nodownload"><source src='{{ file_paths[0] }}' type="audio/mpeg">MP3 not supported by browser.</audio></div>
+	    	</div>
+	    </li>
+	    
+	    <li><div class="list-entry">
+	    	<div hidden>{{ versions_shuffle[1] }}</div>
+	    	<div class="harmo-label">Sample B</div>
+	    	<div class="harmo-audio"><audio id="source_b" controls controlsList="nodownload"><source src='{{ file_paths[1] }}' type="audio/mpeg">MP3 not supported by browser.</audio></div>
+	    	</div>
+	    </li>
+	    
+	    <li><div class="list-entry">
+	    	<div hidden>{{ versions_shuffle[2] }}</div>
+	    	<div class="harmo-label">Sample C</div>
+	    	<div class="harmo-audio"><audio id="source_c" controls controlsList="nodownload"><source src='{{ file_paths[2] }}' type="audio/mpeg">MP3 not supported by browser.</audio></div>
+	    	</div>
+	    </li>
+	    
+	    <li><div class="list-entry">
+	    	<div hidden>{{ versions_shuffle[3] }}</div>
+	    	<div class="harmo-label">Sample D</div>
+	    	<div class="harmo-audio"><audio id="source_d" controls controlsList="nodownload"><source src='{{ file_paths[3] }}' type="audio/mpeg">MP3 not supported by browser.</audio></div>
+	    	</div>
+	    </li>
+	    
+	    <li><div class="list-entry">
+	    	<div hidden>{{ versions_shuffle[4] }}</div>
+	    	<div class="harmo-label">Sample E</div>
+	    	<div class="harmo-audio"><audio id="source_e" controls controlsList="nodownload"><source src='{{ file_paths[4] }}' type="audio/mpeg">MP3 not supported by browser.</audio></div>
+	    	</div>
+	    </li>
+	    
+	    <li><div class="list-entry">
+	    	<div hidden>{{ versions_shuffle[5] }}</div>
+	    	<div class="harmo-label">Sample F</div>
+	    	<div class="harmo-audio"><audio id="source_f" controls controlsList="nodownload"><source src='{{ file_paths[5] }}' type="audio/mpeg">MP3 not supported by browser.</audio></div>
+	    	</div>
+	    </li>
+
+	</ul>
+	
+	<div class="worst-version">低い</div>
+
+	<br>
+
+	<input type="hidden" id="version_ranking" name="version_ranking" value="" />
+	<input type="hidden" name="song_index" id="song_index" value="{{ song_index }}">
+	<input type="hidden" name="participant_id" id="participant_id" value="{{ participant_id }}">
+	<input type="hidden" name="state" id="state" value="eval">
+	<input type="hidden" name="song_id" id="song_id" value="{{ song_id }}"	>
+	<input type="submit" value="Next">
+
+</form>
+</div>
+
+<br><br><br><br>
+
+
+<script>
+
+	function checkType(obj, type) {
+	 // if type not specified (null), returns a string with the object (obj) type
+	 if(type == null) return obj.constructor.toString().split(' ')[1].replace(/\(\)/g,'').toLowerCase();
+	 else {
+	 // returns true if is it is type, else, false
+	 if (obj.constructor.toString().match(new RegExp(type, 'i', 'g'))) return true;
+	 else return false;
+	 }
+	}
+
+	var $sortableList = $("#item-list");
+
+	var listValues = [];
+	for (i = 0; i < 6; i++) {
+		expr = '#item-list > li:eq('.concat(i.toString(), ') > div:eq(0) > div:eq(0)');
+		var $row = $(expr).html();
+		listValues.push($row);
+	}
+	console.log(listValues);
+	$("#version_ranking").val(JSON.stringify(listValues));
+
+
+	var sortEventHandler = function(event, ui){
+		var listValues = [];
+		for (i = 0; i < 6; i++) {
+			expr = '#item-list > li:eq('.concat(i.toString(), ') > div:eq(0) > div:eq(0)');
+			var $row = $(expr).html();
+			listValues.push($row);
+		}
+		$("#version_ranking").val(JSON.stringify(listValues));
+	};
+
+	$sortableList.sortable({
+	    stop: sortEventHandler
+	});
+		
+</script>
+
+
+{% endblock %}

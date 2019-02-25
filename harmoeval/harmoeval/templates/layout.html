@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<head>
+<title>和声受聴評価実験 | {% block title %}{% endblock %}</title>
+<link href="{{ url_for('static', filename='style/style.css') }}" rel="stylesheet" />
+</head>
+
+<body>
+
+<h1>和声受聴評価実験</h1>
+<div class="purpose">(Purpose: Harmonization Research by M. Convert)</div>
+<hr>
+
+<section>
+{% block content %}{% endblock %}
+</section>
+
+</body>

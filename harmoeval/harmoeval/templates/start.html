@@ -1,0 +1,31 @@
+{% extends 'layout.html' %}
+
+{% block title %}ホーム{% endblock %}
+
+{% block content %}
+
+<div class="instruction">
+	ID（ローマ字の苗字）を入力して[Start]ボタンで評価実験を開始してください。<br>
+
+</div>
+<br>
+
+<form method="post" action="eval">
+	<label for="participant_id">ID</label>
+	<input name="participant_id" id="participant_id" required>
+	<input type="hidden" name="state" id="state" value="start">
+	<input type="submit" value="Start">
+</form>
+
+<div class="warning">
+<br>
+	※ やりなおしの場合は同じIDを入力してください<br>
+	※ なるべくイヤフォンを使用して行なってください<br>
+	※ およそ30分お時間をいただきます<br>
+<br>
+</div>
+
+	よろしくお願いいたします。
+
+
+{% endblock %}
